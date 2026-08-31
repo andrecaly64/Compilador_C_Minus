@@ -1,0 +1,21 @@
+/*fibonacci iterativo*/
+void main(void) {
+    int n;
+    int a;
+    int b;
+    int prox;
+    int i;
+
+    n = input();
+    a = 0;
+    b = 1;
+    i = 0;
+
+    while (i < n) {
+        output(a);
+        prox = a + b;
+        a = b;
+        b = prox;
+        i = i + 1;
+    }
+}

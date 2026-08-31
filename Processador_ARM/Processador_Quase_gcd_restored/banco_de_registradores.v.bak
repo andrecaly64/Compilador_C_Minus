@@ -1,0 +1,69 @@
+/*module banco_de_registradores (rd, rn, rm, r1, r2, sinal_escrita, dado, r3, clk);
+input [4:0] rd;
+input [4:0] rn;
+input [4:0] rm;
+input [31:0] dado;
+input sinal_escrita, clk;
+output [31:0] r1;
+output [31:0] r2;
+output [31:0] r3;
+integer primeiroclk=1;
+
+reg[31:0] memoria [31:0];
+
+always @(negedge clk)
+begin
+if(primeiroclk==1)
+begin
+memoria[1] = 32'b00000000000000000000000000000010;
+memoria[12] = 1023;
+memoria[13] = 1023;
+primeiroclk<=2;
+end
+if(sinal_escrita)
+begin
+memoria[rd] = dado;
+end
+end
+assign r1 = memoria[rn];
+assign r2 = memoria[rm];
+assign r3 = memoria[rd];
+
+endmodule
+*/
+module banco_de_registradores (rd, rn, rm, r1, r2, sinal_escrita, dado, r3, clk);
+    input [4:0] rd, rn, rm;
+    input [31:0] dado;
+    input sinal_escrita, clk;
+    output [31:0] r1, r2, r3;
+    
+    reg [31:0] memoria [31:0];
+    
+    integer i;
+    
+    // FORMA CORRETA DE INICIALIZAR NA FPGA
+    initial begin
+        for (i = 0; i < 32; i = i + 1) begin
+            memoria[i] = 32'b0; // Zera todos os registradores ao gravar a placa
+        end
+        // Se você adicionou o código de boot no Assembly, NÃO precisa mais forçar
+        // o SP ou FP aqui. O próprio software vai configurar a memória!
+        // Mas se quiser manter um backup por segurança, deixe assim:
+        //memoria[13] = 32'd1023; // SP inicial
+        //memoria[12] = 32'd1023; // FP inicial
+        memoria[1]  = 32'd2;
+    end
+
+    // MUDOU PARA POSEDGE CLK (Borda de subida, sincronizado com o PC)
+    always @(posedge clk) begin
+        if (sinal_escrita) begin
+            memoria[rd] <= dado; // MUDOU PARA <= (Atribuição não-bloqueante)
+        end
+    end
+    
+    // Leitura combinacional contínua (Isso estava corretíssimo no seu código!)
+    assign r1 = memoria[rn];
+    assign r2 = memoria[rm];
+    assign r3 = memoria[rd];
+    
+endmodule

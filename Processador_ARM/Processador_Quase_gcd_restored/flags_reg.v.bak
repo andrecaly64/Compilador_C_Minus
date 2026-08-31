@@ -1,0 +1,24 @@
+module flags_reg (clk, opcode, Z_in, N_in, Z_out, N_out);
+ 
+input clk;
+input [1:0] opcode;
+input Z_in, N_in;
+output reg Z_out, N_out;
+ 
+// So atualiza as flags travadas quando a instrucao atual e
+// uma operacao aritmetica/logica de verdade (opcode=00).
+// Em qualquer outro opcode (memoria=01, desvio=10, IO/misc=11),
+// o valor anterior e mantido, protegendo o BEQ/BNE de ler
+// flags "sujas" recalculadas pelos proprios bits da instrucao
+// de desvio.
+always @(negedge clk)
+begin
+    if (opcode == 2'b00)
+    begin
+        Z_out <= Z_in;
+        N_out <= N_in;
+    end
+end
+ 
+endmodule
+ 

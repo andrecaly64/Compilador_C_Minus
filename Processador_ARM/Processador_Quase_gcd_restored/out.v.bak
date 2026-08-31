@@ -1,0 +1,26 @@
+module out (entrada, controle, clock, d0, d1, d2, d3);
+
+input wire [31:0] entrada;
+input clock, controle;
+output reg [3:0] d0, d1, d2, d3;
+
+reg [31:0] valor_travado = 0;
+
+// So captura um novo valor quando controle (controle_out) estiver em 1,
+// ou seja, no ciclo exato em que a instrucao OUT executa. Depois disso
+// o valor fica guardado aqui pra sempre, independente do controle
+// voltar a 0 (ex: quando entra no loop .L_FIM_EXECUCAO).
+always @(posedge clock) begin
+    if (controle) begin
+        valor_travado <= entrada;
+    end
+end
+
+always @(*) begin
+    d0 = (valor_travado % 10);
+    d1 = (valor_travado % 100) / 10;
+    d2 = (valor_travado % 1000) / 100;
+    d3 = (valor_travado % 10000) / 1000;
+end
+
+endmodule

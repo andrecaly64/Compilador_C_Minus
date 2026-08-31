@@ -1,0 +1,103 @@
+Restore Archived Project report for Processador
+Fri Jul 10 14:16:41 2026
+Quartus Prime Version 20.1.0 Build 711 06/05/2020 SJ Standard Edition
+
+
+---------------------
+; Table of Contents ;
+---------------------
+  1. Legal Notice
+  2. Restore Archived Project Summary
+  3. Restore Archived Project Messages
+  4. Files Restored
+  5. Files Not Restored
+
+
+
+----------------
+; Legal Notice ;
+----------------
+Copyright (C) 2020  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
+and other software and tools, and any partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel FPGA IP License Agreement, or other applicable license
+agreement, including, without limitation, that your use is for
+the sole purpose of programming logic devices manufactured by
+Intel and sold by Intel or its authorized distributors.  Please
+refer to the applicable agreement for further details, at
+https://fpgasoftware.intel.com/eula.
+
+
+
++-------------------------------------------------------------------------+
+; Restore Archived Project Summary                                        ;
++---------------------------------+---------------------------------------+
+; Restore Archived Project Status ; Successful - Fri Jul 10 14:16:41 2026 ;
+; Revision Name                   ; Processador                           ;
+; Top-level Entity Name           ; Processador                           ;
+; Family                          ; Cyclone IV E                          ;
++---------------------------------+---------------------------------------+
+
+
++-----------------------------------+
+; Restore Archived Project Messages ;
++-----------------------------------+
+Info: Successfully restored '/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd.qar' into the '/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/' directory
+Info: Generated report 'Processador.restore.rpt'
+Info (23030): Evaluation of Tcl script /home/andre/intelFPGA/20.1/quartus/common/tcl/apps/qpm/qar.tcl was successful
+Info: Quartus Prime Shell was successful. 0 errors, 0 warnings
+    Info: Peak virtual memory: 575 megabytes
+    Info: Processing ended: Fri Jul 10 14:16:41 2026
+    Info: Elapsed time: 00:00:01
+    Info: Total CPU time (on all processors): 00:00:00
+
+
++-------------------------------------+
+; Files Restored                      ;
++-------------------------------------+
+; File Name                           ;
++-------------------------------------+
+; qar_info.json                       ;
+; PC.v                                ;
+; Processador.qpf                     ;
+; Processador.qsf                     ;
+; Processador.v                       ;
+; Processador_assignment_defaults.qdf ;
+; SDC1.sdc                            ;
+; Ula.v                               ;
+; Waveform91.vwf                      ;
+; Waveform92.vwf                      ;
+; Waveform93.vwf                      ;
+; assignment_defaults.qdf             ;
+; banco_de_registradores.v            ;
+; bcd.v                               ;
+; contato1.v                          ;
+; extensor_bit.v                      ;
+; flags_reg.v                         ;
+; logica_memoria_de_dados.v           ;
+; memoria_de_dados.v                  ;
+; memoria_de_instrucoes.v             ;
+; mult_in.v                           ;
+; multiplexador1.v                    ;
+; multiplexador2.v                    ;
+; multiplexador3.v                    ;
+; multiplexador_pc.v                  ;
+; out.v                               ;
+; single_port_rom_init.txt            ;
+; ula_pc.v                            ;
+; unidade_de_controle.v               ;
++-------------------------------------+
+
+
++--------------------+
+; Files Not Restored ;
++--------------------+
+; File Name          ;
++--------------------+
+
+

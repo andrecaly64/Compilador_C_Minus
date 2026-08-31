@@ -1,0 +1,43 @@
+/*busca binaria iterativa*/
+int vet[10];
+
+int buscaBinaria(int a[], int tam, int chave) {
+    int low;
+    int high;
+    int mid;
+
+    low = 0;
+    high = tam - 1;
+
+    while (low <= high) {
+        mid = (low + high) / 2;
+
+        if (a[mid] == chave) {
+            return mid;
+        }
+
+        if (a[mid] < chave) {
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+    }
+
+    return -1;
+}
+
+void main(void) {
+    int i;
+    int chave;
+    int res;
+
+    i = 0;
+    while (i < 10) {
+        vet[i] = input();
+        i = i + 1;
+    }
+
+    chave = input();
+    res = buscaBinaria(vet, 10, chave);
+    output(res);
+}

@@ -1,0 +1,41 @@
+Quartus Prime Archive log --	/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/teste2.qarlog
+
+Archive:	/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/teste2.qar
+Date:		Fri Jul 10 21:48:59 2026
+Quartus Prime		20.1.0 Build 711 06/05/2020 SJ Standard Edition
+
+	=========== Files Selected: ===========
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/PC.v
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/Processador.qpf
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/Processador.qsf
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/Processador.v
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/Processador_assignment_defaults.qdf
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/SDC1.sdc
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/Ula.v
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/Waveform.vwf
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/Waveform91.vwf
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/Waveform92.vwf
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/Waveform93.vwf
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/Waveform94.vwf
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/assignment_defaults.qdf
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/banco_de_registradores.v
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/bcd.v
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/contato1.v
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/extensor_bit.v
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/flags_reg.v
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/logica_memoria_de_dados.v
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/memoria_de_dados.v
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/memoria_de_instrucoes.v
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/mult_in.v
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/multiplexador1.v
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/multiplexador2.v
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/multiplexador3.v
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/multiplexador_pc.v
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/out.v
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/single_port_rom_init.txt
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/ula_pc.v
+/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/unidade_de_controle.v
+	======= Total: 30 files to archive =======
+
+	================ Status: ===============
+All files archived successfully.
