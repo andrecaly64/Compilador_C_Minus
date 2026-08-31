@@ -11,7 +11,8 @@ typedef enum {
     OP_RETURN, 
     OP_VEC_READ, 
     OP_VEC_WRITE,
-    OP_HALT
+    OP_HALT,
+    OP_FORMAL_PARAM
 } opkind;
 
 typedef struct quadrupla {

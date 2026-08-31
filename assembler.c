@@ -42,15 +42,19 @@ void int_bin (int num, int bits, char* saida) {
 //mapeamento de registradores para binario
 void get_reg_bin (char* reg, char* saida) {
     int num = 0;
+    //âncora da função atual
     if (strcmp(reg, "fp") == 0) {
         num = 11;
     }
+    //ponteiro da pilha
     else if (strcmp(reg, "sp") == 0) {
         num = 13;
     }
+    //endereço de retorno
     else if (strcmp(reg, "lr") == 0) {
         num = 14;
     }
+    //program counter
     else if (strcmp(reg, "pc") == 0) {
         num = 15;
     }
@@ -68,7 +72,7 @@ int get_label_endereco(char* nome) {
             return labels[i].endereco;
         }
     }
-    printf("\n[ERRO FATAL] O Label '%s' foi chamado, mas nao existe no codigo!\n", nome);
+    printf("\nO Label '%s' foi chamado, mas nao existe no codigo!\n", nome);
     exit(1);
 }
 
@@ -122,7 +126,7 @@ int main(int argc, char* argv[]) {
                 strcmp(primeira_palavra, "BCS") == 0 || strcmp(primeira_palavra, "CPY") == 0 ||
                 strcmp(primeira_palavra, "IN") == 0 || strcmp(primeira_palavra, "IN2") == 0 ||
                 strcmp(primeira_palavra, "OUT") == 0 || strcmp(primeira_palavra, "MOV") == 0 ||
-                strcmp(primeira_palavra, "NOP") == 0) {
+                strcmp(primeira_palavra, "NOP") == 0 || strcmp(primeira_palavra, "BTN") == 0) {
                 endereco_counter++;
             }
         }
@@ -131,9 +135,10 @@ int main(int argc, char* argv[]) {
     rewind(arquivo);
 
     printf("\nGerando Codigo de Maquina....\n");
-    FILE* arquivo_saida = fopen("single_port_rom_init.txt", "w");
+    FILE* arquivo_saida = fopen("Processador_ARM/Processador_Quase_gcd_restored/single_port_rom_init.txt", "w");
 
     while (fgets(linha, sizeof(linha), arquivo)){
+        //conta instrucoes
         if (linha[0] == '@' || linha[0] == '\n' || linha[0] == '.') {
             continue;
         }
@@ -153,7 +158,7 @@ int main(int argc, char* argv[]) {
                             strcmp(op, "BCS") == 0 || strcmp(op, "CPY") == 0 ||
                             strcmp(op, "IN") == 0 || strcmp(op, "OUT") == 0 ||
                             strcmp(op, "MOV") == 0 || strcmp(op, "IN2") == 0 ||
-                            strcmp(op, "NOP") == 0);
+                            strcmp(op, "NOP") == 0 || strcmp(op, "BTN") == 0);
 
         if (!eh_instrucao) {
             continue;
@@ -177,7 +182,7 @@ int main(int argc, char* argv[]) {
         char binario[33] = "00000000000000000000000000000000";
         char rn[6], rd[6], src2[11];
 
-        char cond[5] = "1110"; // AL (Always) ou B
+        char cond[5] = "1110";
         if (strcmp(op, "BEQ") == 0) strcpy(cond, "0000"); 
         else if (strcmp(op, "BNE") == 0) strcpy(cond, "0001");
         else if (strcmp(op, "BCS") == 0 || strcmp(op, "BGE") == 0) strcpy(cond, "0010"); 
@@ -266,16 +271,19 @@ int main(int argc, char* argv[]) {
         else if (strcmp(op, "NOP") == 0) {
             strncpy(&binario[4], "11", 2);
             strncpy(&binario[6], "100000", 6);
-            // resto da palavra fica zerado, nao importa pro NOP
+        }
+
+        else if (strcmp(op, "BTN") == 0) {
+            strncpy(&binario[4], "11", 2);
+            strncpy(&binario[6], "000010", 6); 
         }
 
         else if (op[0] == 'B') {
             strncpy(&binario[4], "10", 2);
 
             if (strcmp(op, "B") == 0) {
-                // Desvio incondicional: continua usando endereco absoluto do label.
                 if (arg1[0] == '\0') {
-                    printf("[ERRO FATAL] Instrucao de desvio '%s' sem argumento na linha: %s\n", op, linha);
+                    printf("Instrucao de desvio '%s' sem argumento na linha: %s\n", op, linha);
                     exit(1);
                 }
                 int dest_address = get_label_endereco(arg1);
@@ -283,21 +291,16 @@ int main(int argc, char* argv[]) {
                 int_bin(dest_address, 20, imm20);
                 strncpy(&binario[12], imm20, 20);
             }
-            // Para BEQ/BNE/BCS/BHI/BLS/BCC (condicionais): sem operando.
-            // O resto da palavra fica zerado (rn=rd=rm=0) -- o hardware
-            // interpreta isso como "pular a proxima instrucao se a condicao
-            // for satisfeita", sem precisar de endereco nenhum aqui.
         }
 
         // FORMATO 6: IN (Mapeando in1 e in2)
-        else if (strncmp(op, "IN", 2) == 0) { // Captura tanto IN quanto IN1 e IN2
+        else if (strncmp(op, "IN", 2) == 0) { 
             strncpy(&binario[4], "11", 2);
             
-            // Se for IN2, gera o funct 001000. Se for IN ou IN1, gera 010000.
             if (strcmp(op, "IN2") == 0) {
-                strncpy(&binario[6], "001000", 6); // Rota para imm8_2
+                strncpy(&binario[6], "001000", 6);
             } else {
-                strncpy(&binario[6], "010000", 6); // Rota para imm8 (in1)
+                strncpy(&binario[6], "010000", 6); 
             }
             
             get_reg_bin(arg1, rd);
@@ -319,6 +322,6 @@ int main(int argc, char* argv[]) {
 
     fclose(arquivo);
     fclose(arquivo_saida);
-    printf("Binario gerado com sucesso em 'binario.txt'!\n");
+    printf("Binario gerado com sucesso em 'single_port_rom.txt'!\n");
     return 0;
 }
