@@ -1,0 +1,82 @@
+m255
+K4
+z2
+!s11f vlog 2020.1 2020.02, Feb 28 2020
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 d/home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/simulation/qsim
+vhard_block
+Z1 !s110 1788192359
+!i10b 1
+!s100 a^L1^3z<Z4Tna5^Gke_X]0
+Z2 !s11b Dg1SIo80bB@j0V0VzS_@n1
+Inm82@SI`PP5FmbNC5BUMT2
+Z3 VDg1SIo80bB@j0V0VzS_@n1
+R0
+Z4 w1788192358
+Z5 8Processador.vo
+Z6 FProcessador.vo
+!i122 160
+L0 127580 34
+Z7 OV;L;2020.1;71
+r1
+!s85 0
+31
+Z8 !s108 1788192358.000000
+Z9 !s107 Processador.vo|
+Z10 !s90 -work|work|Processador.vo|
+!i113 1
+Z11 o-work work
+Z12 tCvgOpt 0
+vProcessador
+R1
+!i10b 1
+!s100 _7_^<?`eUml<BYe1]1hKG3
+R2
+IAB1l[XaDdA^7@KX7T9F<N1
+R3
+R0
+R4
+R5
+R6
+!i122 160
+L0 32 127547
+R7
+r1
+!s85 0
+31
+R8
+R9
+R10
+!i113 1
+R11
+R12
+n@processador
+vProcessador_vlg_vec_tst
+R1
+!i10b 1
+!s100 jT<7J]2lYlCEoIO<TjW<50
+R2
+I9o[od7l6HTMH@4Q4mg;Ei2
+R3
+R0
+w1788192356
+8Waveform102.vwf.vt
+FWaveform102.vwf.vt
+!i122 161
+L0 30 236
+R7
+r1
+!s85 0
+31
+!s108 1788192359.000000
+!s107 Waveform102.vwf.vt|
+!s90 -work|work|Waveform102.vwf.vt|
+!i113 1
+R11
+R12
+n@processador_vlg_vec_tst

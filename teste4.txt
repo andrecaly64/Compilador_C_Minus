@@ -1,0 +1,31 @@
+/*media aritmetica inteira*/
+int vet[10];
+
+void main(void) {
+    int i;
+    int soma;
+    int media;
+    int acima;
+
+    soma = 0;
+    i = 0;
+    while (i < 10) {
+        vet[i] = input();
+        soma = soma + vet[i];
+        i = i + 1;
+    }
+
+    media = soma / 10;
+    output(media);
+
+    acima = 0;
+    i = 0;
+    while (i < 10) {
+        if (vet[i] > media) {
+            acima = acima + 1;
+        }
+        i = i + 1;
+    }
+
+    output(acima);
+}

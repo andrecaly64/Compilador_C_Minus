@@ -1,0 +1,1 @@
+Warning (10268): Verilog HDL information at PC.v(7): always construct contains both blocking and non-blocking assignments File: /home/andre/Documentos/Laboratorio_de_Compiladores/Compilador_C_Minus/Processador_ARM/Processador_Quase_gcd_restored/PC.v Line: 7

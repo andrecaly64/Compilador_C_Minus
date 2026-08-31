@@ -1,0 +1,48 @@
+module debounce_botao (clk, botao_bruto, pulso_pressionado);
+
+// LARGURA_CONTADOR define quantos ciclos o sinal precisa ficar estavel
+// antes de ser aceito como uma transicao real (nao ruido de contato).
+// Pra sintese num FPGA de verdade, ajuste conforme a frequencia do seu
+// clock (quanto mais rapido o clock, maior precisa ser esse contador
+// pra cobrir uns 10-20ms de debounce). Pra SIMULACAO, um valor grande
+// deixa a simulacao muito lenta -- reduza temporariamente so pra testar.
+parameter LARGURA_CONTADOR = 20;
+
+input clk;
+input botao_bruto;
+output reg pulso_pressionado;
+
+reg sync1, sync2;
+reg [LARGURA_CONTADOR-1:0] contador;
+reg estavel;
+reg estavel_anterior;
+
+always @(posedge clk)
+begin
+    // sincronizador de 2 estagios: evita metaestabilidade do sinal
+    // bruto do botao (fora do dominio de clock) entrando direto na logica.
+    sync1 <= botao_bruto;
+    sync2 <= sync1;
+
+    if (sync2 == estavel)
+    begin
+        // sinal sincronizado bate com o valor ja aceito -> reseta o contador
+        contador <= {LARGURA_CONTADOR{1'b0}};
+    end
+    else
+    begin
+        // sinal mudou -- conta quantos ciclos ele fica diferente do estavel
+        contador <= contador + 1'b1;
+        if (contador == {LARGURA_CONTADOR{1'b1}})
+        begin
+            // ficou estavel tempo suficiente -> aceita a nova transicao
+            estavel <= sync2;
+        end
+    end
+
+    estavel_anterior <= estavel;
+    // pulso de 1 ciclo exatamente na borda de subida do sinal ja "limpo"
+    pulso_pressionado <= estavel & ~estavel_anterior;
+end
+
+endmodule

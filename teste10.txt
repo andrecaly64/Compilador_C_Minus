@@ -1,0 +1,15 @@
+/*calculo de raiz quadrada*/
+int raizInteira(int n) {
+    int r;
+    r = 0;
+    while ((r + 1) * (r + 1) <= n) {
+        r = r + 1;
+    }
+    return r;
+}
+
+void main(void) {
+    int x;
+    x = input();
+    output(raizInteira(x));
+}

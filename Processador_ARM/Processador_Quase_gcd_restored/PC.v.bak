@@ -1,0 +1,11 @@
+module PC (clk, prox_endereco, pc);
+
+input clk;
+input wire [31:0] prox_endereco;
+output reg[31:0] pc;
+
+always @(posedge clk)
+begin
+pc = prox_endereco;
+end
+endmodule

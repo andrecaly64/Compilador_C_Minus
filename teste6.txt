@@ -1,0 +1,16 @@
+/*fatorial iterativo*/
+int fatorial(int n) {
+    int res;
+    res = 1;
+    while (n > 1) {
+        res = res * n;
+        n = n - 1;
+    }
+    return res;
+}
+
+void main(void) {
+    int n;
+    n = input();
+    output(fatorial(n));
+}

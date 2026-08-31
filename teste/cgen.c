@@ -1,0 +1,334 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "cgen.h"
+#include "node.h"
+
+static int tempcount = 0;
+static int labelcount = 0;
+quadrupla* inicio = NULL;
+quadrupla* fim = NULL;
+
+typedef struct {
+    char* nome;
+    int tamanho; 
+} GlobalDecl;
+
+static GlobalDecl globais[10];
+static int qtd_globais = 0;
+static int globais_coletados = 0;
+
+static treeNode* desembrulhar_decl(treeNode* n) {
+    if (n == NULL) return NULL;
+    if (n->node == decl && n->nodeSubType.decl == declVar) return n;
+    if (n->child[0] != NULL && n->child[0]->node == decl && n->child[0]->nodeSubType.decl == declVar) {
+        return n->child[0];
+    }
+    return NULL; 
+}
+
+static void coletar_globais(treeNode* root) {
+    treeNode* g = root;
+    while (g != NULL) {
+        treeNode* real = desembrulhar_decl(g);
+        if (real != NULL && real->nodeSubType.decl == declVar && real->type == Array) {
+            globais[qtd_globais].nome = real->key.name;
+            globais[qtd_globais].tamanho =
+                (real->child[0] != NULL) ? real->child[0]->key.value : 10;
+            qtd_globais++;
+        }
+        g = g->sibling;
+    }
+    globais_coletados = 1;
+}
+
+static char* newTemp() {
+    char* temp = malloc(10 * sizeof(char));
+    sprintf(temp, "_t%d", tempcount++);
+    return temp;
+}
+
+static char* newLabel() {
+    char* label = malloc(10 * sizeof(char));
+    sprintf(label, "L%d", labelcount++);
+    return label;
+}
+
+//guardar quadruplas na lista
+void emit(opkind op, char* arg1, char* arg2, char* result) {
+    quadrupla* q = (quadrupla*) malloc(sizeof(quadrupla));
+    q->op = op;
+    q->arg1 = arg1 ? strdup(arg1) : NULL;
+    q->arg2 = arg2 ? strdup(arg2) : NULL;
+    q->result = result ? strdup(result) : NULL;
+    q->prox = NULL;
+
+    if (inicio == NULL) {
+        inicio = q;
+        fim = q;
+    } else {
+        fim->prox = q;
+        fim = q;
+    }
+}
+
+// Traduz uma EXPRESSAO da arvore em uma sequencia de quadruplas e devolve o nome de onde o resultado final vai estar
+char* gerador_expressao(treeNode* node) {
+    if (node == NULL) return NULL;
+
+    //chamdada de funcao
+    if (node->node == stmt && node->nodeSubType.stmt == stmtFunc) {
+        
+        treeNode* arg = node->child[1]; 
+        
+        while (arg != NULL) {
+            char* arg_val = gerador_expressao(arg);
+            emit(OP_PARAM, arg_val, NULL, NULL);
+            arg = arg->sibling;
+        }
+        
+        char* result = newTemp();
+        emit(OP_CALL, node->key.name, NULL, result);
+        return result;
+    }
+
+    if (node->node != exp) return NULL;
+
+    if (node->nodeSubType.exp == expNum) {
+        char* numStr = malloc(16 * sizeof(char));
+        sprintf(numStr, "%d", node->key.value);
+        return numStr;
+    }
+    //leitura de valores do vetor
+    else if (node->nodeSubType.exp == expId) {
+        if (node->child[0] != NULL) {
+            char* index = gerador_expressao(node->child[0]); 
+            char* result = newTemp(); 
+            
+            emit(OP_VEC_READ, node->key.name, index, result); 
+            return result;
+        } else {
+            return strdup(node->key.name); 
+        }
+    }
+    else if (node->nodeSubType.exp == expOp) {
+        char* left_arg = gerador_expressao(node->child[0]);
+        char* right_arg = gerador_expressao(node->child[1]);
+        char* result = newTemp();
+
+        opkind op;
+        if (node->key.op == 14) op = OP_ADD;
+        else if (node->key.op == 15) op = OP_SUB;
+        else if (node->key.op == 16) op = OP_MULT;
+        else if (node->key.op == 17) op = OP_DIV;
+
+        else if (node->key.op == 10) op = OP_LT;
+        else if (node->key.op == 11) op = OP_LE;
+        else if (node->key.op == 12) op = OP_GT;
+        else if (node->key.op == 13) op = OP_GE;
+        else if (node->key.op == 8) op = OP_EQ;
+        else if (node->key.op == 9) op = OP_NEQ;
+
+        /*else {
+            printf("Erro: Operador desconhecido! Valor do op: %d\n", node->key.op);
+        }*/
+
+        emit(op, left_arg, right_arg, result);
+        return result;
+    }
+    
+    return NULL;
+}
+
+void gerador_codigo(treeNode* root) {
+    //comeca na raiz da arvore
+    if (root == NULL) return;
+
+    if (!globais_coletados) {
+        coletar_globais(root);
+    }
+
+    treeNode* atual = root;
+
+    while (atual != NULL) {
+        
+        //Declaração de Função
+        if (atual->node == decl && atual->nodeSubType.decl == declFunc) {
+            char params_str[100] = "";
+            treeNode* p = atual->child[0]; // lista de parametros da funcao
+            while (p != NULL) {
+                if (p->node == exp && p->key.name != NULL && strcmp(p->key.name, "void") == 0) {
+                    break;
+                }
+                treeNode* param_real = desembrulhar_decl(p);
+                if (param_real == NULL || param_real->key.name == NULL) {
+                    fprintf(stderr, "[AVISO cgen.c] parametro de '%s' em formato inesperado "
+                                    "(node=%d) -- pulando coleta de parametros dessa funcao.\n",
+                                    atual->key.name, p->node);
+                    params_str[0] = '\0';
+                    break;
+                }
+                strcat(params_str, param_real->key.name);
+                if (p->sibling != NULL) strcat(params_str, ",");
+                p = p->sibling;
+            }
+            emit(OP_LABEL, atual->key.name, params_str[0] != '\0' ? params_str : NULL, NULL);
+
+            if (strcmp(atual->key.name, "main") == 0) {
+                int endereco = 32;
+                int gi;
+                for (gi = 0; gi < qtd_globais; gi++) {
+                    char endereco_str[16];
+                    sprintf(endereco_str, "%d", endereco);
+                    emit(OP_ASSIGN, endereco_str, NULL, globais[gi].nome);
+                    endereco += globais[gi].tamanho * 4; // 4 bytes por elemento
+                }
+            }
+
+            gerador_codigo(atual->child[1]);
+            
+            if (strcmp(atual->key.name, "main") == 0) {
+                emit(OP_HALT, NULL, NULL, NULL); 
+            } else {
+                if (fim != NULL && fim->op != OP_RETURN) {
+                    emit(OP_RETURN, NULL, NULL, NULL);
+                }
+            }
+        }
+        
+        // Atribuição e atribuicao de vetor
+        else if (atual->node == stmt && atual->nodeSubType.stmt == stmtAttrib) {
+            char* right_val = gerador_expressao(atual->child[1]);
+            treeNode* var_node = atual->child[0];
+            
+            if (var_node->child[0] != NULL) {
+                char* index = gerador_expressao(var_node->child[0]);
+                
+                emit(OP_VEC_WRITE, index, right_val, var_node->key.name);
+            } else {
+                emit(OP_ASSIGN, right_val, NULL, var_node->key.name);
+            }
+        }
+
+        //if
+        else if (atual->node == stmt && atual->nodeSubType.stmt == stmtIf) {
+            char* condition_result = gerador_expressao(atual->child[0]);
+            
+            char* label_else = newLabel();
+            char* label_fim = newLabel();
+            
+            emit(OP_IF_FALSE, condition_result, NULL, label_else);
+            
+            gerador_codigo(atual->child[1]);
+            
+            emit(OP_GOTO, NULL, NULL, label_fim);
+            
+            emit(OP_LABEL, label_else, NULL, NULL);
+            //printf("Entrei aqui4");
+            
+            if (atual->child[2] != NULL) {
+                gerador_codigo(atual->child[2]);
+            }
+            
+            emit(OP_LABEL, label_fim, NULL, NULL);
+        }
+
+        //while
+        else if (atual->node == stmt && atual->nodeSubType.stmt == stmtWhile) {
+            
+            char* label_start = newLabel();
+            char* label_end = newLabel();
+            
+            emit(OP_LABEL, label_start, NULL, NULL);
+            
+            char* condition_result = gerador_expressao(atual->child[0]);
+            
+            emit(OP_IF_FALSE, condition_result, NULL, label_end);
+
+            //printf("Entrei aqui6");
+            
+            gerador_codigo(atual->child[1]);
+            
+            emit(OP_GOTO, NULL, NULL, label_start);
+            
+            emit(OP_LABEL, label_end, NULL, NULL);
+        }
+
+        // Retorno (Return)
+        else if (atual->node == stmt && atual->nodeSubType.stmt == stmtReturn) {
+            if (atual->child[0] != NULL) {
+                char* ret_val = gerador_expressao(atual->child[0]);
+                emit(OP_RETURN, ret_val, NULL, NULL);
+            } else {
+                emit(OP_RETURN, NULL, NULL, NULL);
+            }
+        }
+
+        //chamda de funcao
+        else if (atual->node == stmt && atual->nodeSubType.stmt == stmtFunc) {
+            
+            treeNode* arg = atual->child[1]; 
+            
+            while (arg != NULL) {
+                char* arg_val = gerador_expressao(arg);
+                emit(OP_PARAM, arg_val, NULL, NULL);
+                arg = arg->sibling;
+            }
+            
+            emit(OP_CALL, atual->key.name, NULL, NULL);
+        }
+        
+        else {
+            int i;
+            for (i = 0; i < CHILD_MAX_NODES; i++) {
+                if (atual->child[i] != NULL) {
+                    gerador_codigo(atual->child[i]);
+                    //printf("Entrei aqui7");
+                }
+            }
+        }
+        atual = atual->sibling;
+    }
+}
+
+void print_quadruplas() {
+    quadrupla* atual = inicio;
+
+    printf("\n");
+
+    while (atual != NULL) {
+        char* op_str = "";
+
+        switch (atual->op) {
+            case OP_ADD: op_str = "ADD"; break;
+            case OP_SUB: op_str = "SUB"; break;
+            case OP_MULT: op_str = "MULT"; break;
+            case OP_DIV: op_str = "DIV"; break;
+            case OP_ASSIGN: op_str = "ASSIGN"; break;
+            case OP_EQ: op_str = "EQ"; break;
+            case OP_LT: op_str = "LT"; break;
+            case OP_GT: op_str = "GT"; break;
+            case OP_LE: op_str = "LE"; break;
+            case OP_NEQ: op_str = "NEQ"; break;
+            case OP_GE: op_str = "GE"; break;
+            case OP_GOTO: op_str = "GOTO"; break;
+            case OP_IF_FALSE: op_str = "IF_FALSE"; break;
+            case OP_LABEL: op_str = "LABEL"; break;
+            case OP_CALL: op_str = "CALL"; break;
+            case OP_PARAM: op_str = "PARAM"; break;
+            case OP_RETURN: op_str = "RETURN"; break;
+            case OP_VEC_READ: op_str = "VEC_READ"; break;
+            case OP_VEC_WRITE: op_str = "VEC_WRITE"; break;
+            case OP_HALT: op_str = "HALT"; break;
+            default: op_str = "UNKNOWN"; break;    
+        }
+        
+        char* a1 = (atual->arg1 != NULL) ? atual->arg1 : "-";
+        char* a2 = (atual->arg2 != NULL) ? atual->arg2 : "-";
+        char* res = (atual->result != NULL ) ? atual->result : "-";
+        
+        printf("(%s, %s, %s, %s)\n", op_str, a1, a2, res);
+
+        atual = atual->prox;
+    }
+}
