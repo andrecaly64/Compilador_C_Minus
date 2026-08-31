@@ -42,9 +42,8 @@ void emit(opkind op, char* arg1, char* arg2, char* result) {
 char* gerador_expressao(treeNode* node) {
     if (node == NULL) return NULL;
 
-    //chamdada de funcao
+    //chamada de funcao
     if (node->node == stmt && node->nodeSubType.stmt == stmtFunc) {
-        
         treeNode* arg = node->child[1]; 
         
         while (arg != NULL) {
@@ -95,10 +94,6 @@ char* gerador_expressao(treeNode* node) {
         else if (node->key.op == 8) op = OP_EQ;
         else if (node->key.op == 9) op = OP_NEQ;
 
-        /*else {
-            printf("Erro: Operador desconhecido! Valor do op: %d\n", node->key.op);
-        }*/
-
         emit(op, left_arg, right_arg, result);
         return result;
     }
@@ -107,16 +102,30 @@ char* gerador_expressao(treeNode* node) {
 }
 
 void gerador_codigo(treeNode* root) {
-    //comeca na raiz da arvore
     if (root == NULL) return;
 
     treeNode* atual = root;
 
     while (atual != NULL) {
-        
         //Declaração de Função
         if (atual->node == decl && atual->nodeSubType.decl == declFunc) {
             emit(OP_LABEL, atual->key.name, NULL, NULL);
+
+            treeNode* param = atual->child[0];
+
+            while (param != NULL) {
+                char* nome_param = NULL;
+                if (param->node == decl && param->nodeSubType.decl == declIdType && param->child[0] != NULL) {
+                    nome_param = param->child[0]->key.name;
+                } else {
+                    nome_param = param->key.name;
+                }
+
+                if (nome_param != NULL && strcmp(nome_param, "void") != 0) {
+                    emit(OP_FORMAL_PARAM, nome_param, NULL, NULL);
+                }
+                param = param->sibling;
+            }
             
             gerador_codigo(atual->child[1]);
             
@@ -128,65 +137,46 @@ void gerador_codigo(treeNode* root) {
                 }
             }
         }
-        
-        // Atribuição e atribuicao de vetor
+        // Atribuição e atribuição de vetor
         else if (atual->node == stmt && atual->nodeSubType.stmt == stmtAttrib) {
             char* right_val = gerador_expressao(atual->child[1]);
             treeNode* var_node = atual->child[0];
             
             if (var_node->child[0] != NULL) {
                 char* index = gerador_expressao(var_node->child[0]);
-                
                 emit(OP_VEC_WRITE, index, right_val, var_node->key.name);
             } else {
                 emit(OP_ASSIGN, right_val, NULL, var_node->key.name);
             }
         }
-
         //if
         else if (atual->node == stmt && atual->nodeSubType.stmt == stmtIf) {
             char* condition_result = gerador_expressao(atual->child[0]);
-            
             char* label_else = newLabel();
             char* label_fim = newLabel();
             
             emit(OP_IF_FALSE, condition_result, NULL, label_else);
-            
             gerador_codigo(atual->child[1]);
-            
             emit(OP_GOTO, NULL, NULL, label_fim);
-            
             emit(OP_LABEL, label_else, NULL, NULL);
-            //printf("Entrei aqui4");
             
             if (atual->child[2] != NULL) {
                 gerador_codigo(atual->child[2]);
             }
-            
             emit(OP_LABEL, label_fim, NULL, NULL);
         }
-
         //while
         else if (atual->node == stmt && atual->nodeSubType.stmt == stmtWhile) {
-            
             char* label_start = newLabel();
             char* label_end = newLabel();
             
             emit(OP_LABEL, label_start, NULL, NULL);
-            
             char* condition_result = gerador_expressao(atual->child[0]);
-            
             emit(OP_IF_FALSE, condition_result, NULL, label_end);
-
-            //printf("Entrei aqui6");
-            
             gerador_codigo(atual->child[1]);
-            
             emit(OP_GOTO, NULL, NULL, label_start);
-            
             emit(OP_LABEL, label_end, NULL, NULL);
         }
-
         // Retorno (Return)
         else if (atual->node == stmt && atual->nodeSubType.stmt == stmtReturn) {
             if (atual->child[0] != NULL) {
@@ -196,10 +186,8 @@ void gerador_codigo(treeNode* root) {
                 emit(OP_RETURN, NULL, NULL, NULL);
             }
         }
-
-        //chamda de funcao
+        //chamada de função
         else if (atual->node == stmt && atual->nodeSubType.stmt == stmtFunc) {
-            
             treeNode* arg = atual->child[1]; 
             
             while (arg != NULL) {
@@ -207,16 +195,13 @@ void gerador_codigo(treeNode* root) {
                 emit(OP_PARAM, arg_val, NULL, NULL);
                 arg = arg->sibling;
             }
-            
             emit(OP_CALL, atual->key.name, NULL, NULL);
         }
-        
         else {
             int i;
             for (i = 0; i < CHILD_MAX_NODES; i++) {
                 if (atual->child[i] != NULL) {
                     gerador_codigo(atual->child[i]);
-                    //printf("Entrei aqui7");
                 }
             }
         }
@@ -226,12 +211,10 @@ void gerador_codigo(treeNode* root) {
 
 void print_quadruplas() {
     quadrupla* atual = inicio;
-
     printf("\n");
 
     while (atual != NULL) {
         char* op_str = "";
-
         switch (atual->op) {
             case OP_ADD: op_str = "ADD"; break;
             case OP_SUB: op_str = "SUB"; break;
@@ -253,6 +236,7 @@ void print_quadruplas() {
             case OP_VEC_READ: op_str = "VEC_READ"; break;
             case OP_VEC_WRITE: op_str = "VEC_WRITE"; break;
             case OP_HALT: op_str = "HALT"; break;
+            case OP_FORMAL_PARAM: op_str = "FORMAL_PARAM"; break;
             default: op_str = "UNKNOWN"; break;    
         }
         
@@ -261,7 +245,6 @@ void print_quadruplas() {
         char* res = (atual->result != NULL ) ? atual->result : "-";
         
         printf("(%s, %s, %s, %s)\n", op_str, a1, a2, res);
-
         atual = atual->prox;
     }
 }
